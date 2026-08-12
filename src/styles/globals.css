@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens
+   --------------------------------------------------------------------------
+   These are ENGINE defaults. Each centre overrides them at runtime through a
+   small `:root` style block emitted by <CentreTheme />, which is generated
+   from `branding` in the centre configuration.
+
+   Shared components must never hardcode a brand colour — always go through a
+   token so a new centre can be re-themed without touching component code.
+   ========================================================================== */
+
+:root {
+  /* Brand */
+  --brand-primary: #ef4524;
+  --brand-secondary: #ff7a1f;
+  --brand-soft: #fff0ed;
+  --brand-soft-2: #fff8f5;
+  --brand-gradient-angle: 100deg;
+
+  /* Text */
+  --text-primary: #202632;
+  --text-secondary: #687385;
+  --text-muted: #8b93a1;
+
+  /* Surfaces */
+  --surface: #ffffff;
+  --surface-warm: #fffdfb;
+  --surface-muted: #fafafa;
+
+  /* Lines */
+  --border: #e7e9ee;
+  --border-warm: #f1ded8;
+
+  /* Footer */
+  --footer: #202632;
+
+  /* Typography */
+  --font-brand: var(--font-poppins);
+
+  /* Elevation — restrained by design */
+  --shadow-soft: 0 1px 2px rgb(32 38 50 / 0.04), 0 8px 24px -12px rgb(32 38 50 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(32 38 50 / 0.05), 0 18px 40px -20px rgb(32 38 50 / 0.16);
+  --shadow-brand: 0 8px 20px -10px color-mix(in srgb, var(--brand-primary) 65%, transparent);
+}
+
+@theme inline {
+  --color-brand: var(--brand-primary);
+  --color-brand-2: var(--brand-secondary);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-soft-2: var(--brand-soft-2);
+
+  --color-ink: var(--text-primary);
+  --color-ink-soft: var(--text-secondary);
+  --color-ink-muted: var(--text-muted);
+
+  --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
+  --color-surface-muted: var(--surface-muted);
+
+  --color-line: var(--border);
+  --color-line-warm: var(--border-warm);
+
+  --color-footer: var(--footer);
+
+  --font-sans: var(--font-brand), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+
+  --radius-card: 1.25rem;
+  --radius-card-lg: 1.5rem;
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-brand: var(--shadow-brand);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Sticky header offset for in-page anchors */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    /* `clip` rather than `hidden` so position: sticky keeps working. Acts as a
+       safety net against accidental horizontal page overflow on small screens. */
+    overflow-x: clip;
+  }
+
+  /* Headings inherit the brand font and a tighter measure by default. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: var(--brand-soft);
+    color: var(--text-primary);
+  }
+
+  address {
+    font-style: normal;
+  }
+
+  /* Native controls follow the brand */
+  :root {
+    accent-color: var(--brand-primary);
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@utility gradient-brand {
+  background-image: linear-gradient(
+    var(--brand-gradient-angle),
+    var(--brand-primary),
+    var(--brand-secondary)
+  );
+}
+
+@utility text-gradient-brand {
+  background-image: linear-gradient(
+    var(--brand-gradient-angle),
+    var(--brand-primary),
+    var(--brand-secondary)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Keeps descenders from clipping in some browsers */
+  padding-bottom: 0.05em;
+}
+
+@utility surface-glow {
+  background-image: radial-gradient(
+    60% 60% at 50% 0%,
+    color-mix(in srgb, var(--brand-primary) 7%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* Hides scrollbars on deliberately scrollable rails (day pills, filters). */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Motion
+   --------------------------------------------------------------------------
+   Reveal animations are opt-in and driven by an IntersectionObserver in
+   <Reveal />. No animation library, and everything switches off for users who
+   ask for reduced motion.
+   ========================================================================== */
+
+@layer components {
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .reveal[data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
