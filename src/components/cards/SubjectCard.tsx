@@ -126,7 +126,11 @@ export function SubjectCard({
             {href ? (
               <Link
                 href={href}
-                className={buttonClasses({ variant: "primary", size: "sm" })}
+                className={cn(
+                  buttonClasses({ variant: "primary", size: "sm" }),
+                  // Lifts above the card-wide stretched link from the title.
+                  "relative z-10",
+                )}
               >
                 Explore {subject.shortName ?? subject.name}
                 <ArrowRight aria-hidden="true" className="size-4" />

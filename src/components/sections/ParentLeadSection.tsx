@@ -29,10 +29,10 @@ export function ParentLeadSection({
 
   const copy = sectionCopy(centre, "parentLead", {
     eyebrow: "For parents",
-    heading: "Send me the timetable and fee guide",
-    highlight: "timetable and fee guide",
+    heading: "Send me the timetable and fees",
+    highlight: "timetable and fees",
     description:
-      "Leave your name and number and we will send the current schedule, class sizes and fees on WhatsApp — no phone call unless you ask for one.",
+      "Leave your name and number. We'll send the current schedule, class sizes and fees on WhatsApp — no phone call unless you ask for one.",
   });
 
   return (
@@ -45,7 +45,11 @@ export function ParentLeadSection({
             id="parent-lead-heading"
             className="text-3xl leading-[1.15] font-bold text-ink sm:text-4xl"
           >
-            <HighlightedHeading heading={copy.heading} highlight={copy.highlight} />
+            <HighlightedHeading
+              heading={copy.heading}
+              highlight={copy.highlight}
+              highlightAnimation={copy.highlightAnimation}
+            />
           </h2>
 
           {copy.description ? (

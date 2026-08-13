@@ -43,9 +43,10 @@ export default function TutorsPage() {
     <>
       <PageHeader
         eyebrow="Our tutors"
-        title="The people who will teach your child"
-        highlight="teach your child"
-        description="Small groups only work when the tutor is good. These are the people who will be in the room — what they teach, and how long they have been doing it."
+        title="Know exactly who's teaching your child"
+        highlight="who's teaching your child"
+        highlightAnimation="drop"
+        description="Meet the tutors behind every class — their subjects, their experience and how they teach."
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Tutors", path: "/tutors" },
@@ -96,6 +97,7 @@ export default function TutorsPage() {
           eyebrow="In more detail"
           heading="What each tutor specialises in"
           highlight="specialises in"
+          highlightAnimation="none"
           headingId="tutor-detail-heading"
           align="left"
         />

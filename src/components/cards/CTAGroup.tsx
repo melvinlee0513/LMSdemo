@@ -3,13 +3,14 @@ import { Check, MessageCircle } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { HighlightedHeading } from "@/components/ui/SectionHeader";
-import type { CtaSection } from "@/config/types";
+import type { CtaSection, HighlightAnimation } from "@/config/types";
 import { cn } from "@/lib/utils";
 
 export type CTAGroupProps = {
   cta: CtaSection;
   whatsappHref?: string;
   variant?: "boxed" | "banner";
+  highlightAnimation?: HighlightAnimation;
   className?: string;
 };
 
@@ -23,6 +24,7 @@ export function CTAGroup({
   cta,
   whatsappHref,
   variant = "boxed",
+  highlightAnimation = "none",
   className,
 }: CTAGroupProps) {
   const dark = variant === "banner";
@@ -58,7 +60,11 @@ export function CTAGroup({
           {dark ? (
             cta.heading
           ) : (
-            <HighlightedHeading heading={cta.heading} highlight={cta.highlight} />
+            <HighlightedHeading
+              heading={cta.heading}
+              highlight={cta.highlight}
+              highlightAnimation={highlightAnimation}
+            />
           )}
         </h2>
 

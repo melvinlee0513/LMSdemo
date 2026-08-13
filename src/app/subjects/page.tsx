@@ -41,9 +41,10 @@ export default function SubjectsPage() {
     <>
       <PageHeader
         eyebrow="Our subjects"
-        title={`Subjects we teach${where}`}
-        highlight="Subjects we teach"
-        description={`Every subject runs as a capped small group with its own tutor. Choose a subject to see what is covered, who teaches it and when the classes run.`}
+        title={`What your child can study${where}`}
+        highlight="can study"
+        highlightAnimation="drop"
+        description="Each subject runs as a capped small group with its own tutor. Open one to see what's covered, who teaches it and when the classes run."
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Subjects", path: "/subjects" },
@@ -58,7 +59,11 @@ export default function SubjectsPage() {
       />
 
       <Section tone="surface">
-        <SubjectExplorer cards={cards} categories={subjectCategoriesInUse(centre)} />
+        <SubjectExplorer
+          cards={cards}
+          categories={subjectCategoriesInUse(centre)}
+          stacked={centre.motion.subjectStacking}
+        />
       </Section>
 
       <TrialCtaSection centre={centre} />

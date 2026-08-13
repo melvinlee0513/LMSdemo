@@ -1,38 +1,51 @@
 import { ArrowRight } from "lucide-react";
 
 import { SubjectCard } from "@/components/cards/SubjectCard";
+import { SubjectStack } from "@/components/sections/SubjectStack";
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import type { Centre } from "@/config/types";
-import { classesForSubject, featuredSubjects, tutorsForSubject } from "@/lib/content";
+import { featuredSubjects } from "@/lib/content";
 import { sectionCopy } from "@/lib/section-copy";
 import { cn } from "@/lib/utils";
-import { whatsappHref } from "@/lib/whatsapp";
+import { subjectCardProps } from "@/lib/view-models";
 
 /**
  * Homepage subjects preview.
  *
  * Variants:
- *   split-cards  full-width split cards, one per row (the reference design)
+ *   split-cards  full-width split cards that stack as you scroll (reference)
  *   grid         three compact cards per row
  *   editorial    two split cards per row
+ *
+ * Only `split-cards` stacks: the effect needs full-width cards in a single
+ * column to read as layering rather than as clutter.
  */
 export function SubjectsSection({ centre }: { centre: Centre }) {
   if (!centre.featureFlags.subjects || centre.subjects.length === 0) return null;
 
   const variant = centre.componentVariants.subjects;
   const subjects = featuredSubjects(centre, variant === "grid" ? 6 : 3);
-  const whatsapp = centre.featureFlags.whatsapp ? centre.whatsapp : undefined;
+  const stacked = variant === "split-cards" && centre.motion.subjectStacking;
 
   const copy = sectionCopy(centre, "subjects", {
     eyebrow: "Our subjects",
-    heading: `Subjects we teach at ${centre.identity.name}`,
-    highlight: "Subjects we teach",
+    heading: "What your child can study with us",
+    highlight: "study with us",
     description:
-      "Each subject runs as a small group with its own tutor, weekly marked practice and a clear plan for the year.",
+      "Each subject has its own tutor, small-group classes and weekly practice that gets marked, not forgotten.",
   });
+
+  const cards = subjects.map((subject, index) => (
+    <SubjectCard
+      key={subject.slug}
+      {...subjectCardProps(centre, subject, index)}
+      variant={variant === "grid" ? "grid" : "split"}
+      className="h-full"
+    />
+  ));
 
   return (
     <Section tone="warm" ariaLabelledBy="subjects-heading">
@@ -40,39 +53,30 @@ export function SubjectsSection({ centre }: { centre: Centre }) {
         eyebrow={copy.eyebrow}
         heading={copy.heading}
         highlight={copy.highlight}
+        highlightAnimation={copy.highlightAnimation}
         description={copy.description}
         headingId="subjects-heading"
         align="center"
       />
 
-      <div
-        className={cn(
-          "mt-10 grid gap-5 sm:mt-12",
-          variant === "grid" && "sm:grid-cols-2 lg:grid-cols-3",
-          variant === "editorial" && "lg:grid-cols-2",
+      <div className="mt-10 sm:mt-12">
+        {stacked ? (
+          <SubjectStack items={cards} />
+        ) : (
+          <div
+            className={cn(
+              "grid gap-5",
+              variant === "grid" && "sm:grid-cols-2 lg:grid-cols-3",
+              variant === "editorial" && "lg:grid-cols-2",
+            )}
+          >
+            {cards.map((card, index) => (
+              <Reveal key={subjects[index]!.slug} delay={index * 70}>
+                {card}
+              </Reveal>
+            ))}
+          </div>
         )}
-      >
-        {subjects.map((subject, index) => (
-          <Reveal key={subject.slug} delay={index * 70}>
-            <SubjectCard
-              subject={subject}
-              variant={variant === "grid" ? "grid" : "split"}
-              index={index}
-              className="h-full"
-              tutorCount={tutorsForSubject(centre, subject.slug).length}
-              classCount={classesForSubject(centre, subject.slug).length}
-              href={
-                centre.featureFlags.subjectDetailPages
-                  ? `/subjects/${subject.slug}`
-                  : undefined
-              }
-              whatsappHref={whatsappHref(whatsapp, "subject", {
-                centre: centre.identity.name,
-                subject: subject.name,
-              })}
-            />
-          </Reveal>
-        ))}
       </div>
 
       {centre.subjects.length > subjects.length ? (

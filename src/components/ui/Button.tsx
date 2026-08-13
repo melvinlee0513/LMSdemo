@@ -11,21 +11,32 @@ export type ButtonVariant =
   | "whatsapp";
 export type ButtonSize = "sm" | "md" | "lg";
 
+/**
+ * One interaction model for every button on the site:
+ *   hover  lifts 2px, shadow deepens slightly
+ *   press  settles back down and compresses very slightly
+ *   arrow  a trailing icon nudges forward on hover
+ *
+ * The arrow rule targets a trailing `<svg>` only, so buttons with a *leading*
+ * icon (WhatsApp, send) are untouched — the motion means "forward", and it
+ * should only appear where something moves forward.
+ */
 const base =
   "inline-flex items-center justify-center gap-2 rounded-full font-semibold " +
-  "transition-[transform,box-shadow,background-color,color,border-color] duration-200 " +
+  "transition-[transform,box-shadow,background-color,color,border-color] " +
+  "duration-[var(--motion-normal)] ease-[var(--ease-emphasized)] " +
   "select-none whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-60 " +
-  "active:translate-y-px";
+  "active:translate-y-0 active:scale-[0.985] " +
+  "[&>svg:last-child]:transition-transform [&>svg:last-child]:duration-[var(--motion-fast)] " +
+  "hover:[&>svg:last-child]:translate-x-[3px]";
 
 const variants: Record<ButtonVariant, string> = {
-  primary:
-    "gradient-brand text-white shadow-brand hover:-translate-y-0.5 hover:shadow-lift active:translate-y-0",
+  primary: "gradient-brand text-white shadow-brand hover:-translate-y-0.5 hover:shadow-lift",
   secondary:
-    "border border-line-warm bg-surface text-brand hover:bg-brand-soft hover:-translate-y-0.5 active:translate-y-0",
+    "border border-line-warm bg-surface text-brand hover:bg-brand-soft hover:-translate-y-0.5",
   ghost: "text-ink-soft hover:bg-surface-muted hover:text-ink",
-  dark: "bg-ink text-white hover:-translate-y-0.5 hover:bg-ink/90 active:translate-y-0",
-  whatsapp:
-    "bg-[#1faa5a] text-white shadow-soft hover:-translate-y-0.5 hover:bg-[#1b9750] active:translate-y-0",
+  dark: "bg-ink text-white hover:-translate-y-0.5 hover:bg-ink/90",
+  whatsapp: "bg-[#1faa5a] text-white shadow-soft hover:-translate-y-0.5 hover:bg-[#1b9750]",
 };
 
 /** Every size clears the 44×44px minimum touch target. */

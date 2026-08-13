@@ -4,6 +4,7 @@ import { Breadcrumbs, type Crumb } from "@/components/seo/Breadcrumbs";
 import { Container } from "@/components/ui/Container";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { HighlightedHeading } from "@/components/ui/SectionHeader";
+import type { HighlightAnimation } from "@/config/types";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,6 +16,7 @@ export function PageHeader({
   eyebrow,
   title,
   highlight,
+  highlightAnimation = "none",
   description,
   breadcrumbs,
   actions,
@@ -24,6 +26,8 @@ export function PageHeader({
   eyebrow?: string;
   title: string;
   highlight?: string;
+  /** Page titles animate only where the page is a deliberate landing moment. */
+  highlightAnimation?: HighlightAnimation;
   description?: string;
   breadcrumbs?: Crumb[];
   actions?: ReactNode;
@@ -51,7 +55,11 @@ export function PageHeader({
             {eyebrow ? <SectionLabel className="self-start">{eyebrow}</SectionLabel> : null}
 
             <h1 className="text-[2.125rem] leading-[1.1] font-extrabold text-ink sm:text-5xl lg:text-[3.25rem]">
-              <HighlightedHeading heading={title} highlight={highlight} />
+              <HighlightedHeading
+                heading={title}
+                highlight={highlight}
+                highlightAnimation={highlightAnimation}
+              />
             </h1>
 
             {description ? (

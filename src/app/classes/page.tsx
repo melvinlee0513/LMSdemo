@@ -44,10 +44,11 @@ export default function ClassesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Weekly classes"
-        title="Every class you can enrol into"
-        highlight="enrol into"
-        description="A class is a real weekly session with a named tutor, a fixed time and a capped group. Filter to find the ones that fit your child's form and your family's schedule."
+        eyebrow="Our classes"
+        title="Find the class that fits your child"
+        highlight="fits your child"
+        highlightAnimation="drop"
+        description="Browse by form, subject, day or branch. Every class is a real weekly session with a named tutor, a fixed time and a capped group."
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Classes", path: "/classes" },

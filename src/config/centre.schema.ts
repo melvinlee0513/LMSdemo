@@ -76,6 +76,9 @@ const ctaSchema = z.strictObject({
   href: z.string().min(1),
 });
 
+/** How a highlighted heading fragment enters. */
+export const highlightAnimationSchema = z.enum(["drop", "none"]);
+
 /* -------------------------------------------------------------------------- */
 /* Identity, branding, SEO, contact                                            */
 /* -------------------------------------------------------------------------- */
@@ -220,6 +223,12 @@ const headlineFragment = z.strictObject({
 export const heroSchema = z.strictObject({
   eyebrow: z.string().min(3).optional(),
   headline: z.array(headlineFragment).min(1),
+  /**
+   * How the highlighted fragment of the headline enters. The hero is the one
+   * place the drop reveal is on by default — it is the site's single most
+   * deliberate moment.
+   */
+  highlightAnimation: highlightAnimationSchema.default("drop"),
   description: z.string().min(40),
   primaryCta: ctaSchema,
   secondaryCta: ctaSchema.optional(),
@@ -305,8 +314,32 @@ export const sectionCopySchema = z.record(
     heading: z.string().min(5).optional(),
     highlight: z.string().min(2).optional(),
     description: z.string().min(20).optional(),
+    /**
+     * Not every highlighted phrase should animate — the engine uses it
+     * selectively so the effect keeps its meaning.
+     */
+    highlightAnimation: highlightAnimationSchema.optional(),
   }),
 );
+
+/**
+ * Motion switches. Small on purpose: this is a handful of shared capabilities,
+ * not an animation CMS. Defaults match the polished reference implementation;
+ * a centre that wants a calmer site turns individual effects off here rather
+ * than editing components.
+ */
+export const motionSchema = z.strictObject({
+  /** Drop-reveal on selected highlighted heading fragments. */
+  animatedHighlights: z.boolean().default(true),
+  /** Gentle drift on the hero's micro-pills. */
+  floatingHeroPills: z.boolean().default(true),
+  /** Odometer roll on statistics when they enter the viewport. */
+  rollingStats: z.boolean().default(true),
+  /** Almost-subconscious pulse on eyebrow section labels. */
+  breathingEyebrows: z.boolean().default(true),
+  /** Sticky layering of subject cards on tall, wide viewports. */
+  subjectStacking: z.boolean().default(true),
+});
 
 export const ctaSectionSchema = z.strictObject({
   eyebrow: z.string().min(3).optional(),
@@ -561,6 +594,7 @@ export const centreSchema = z
     componentVariants: componentVariantsSchema,
     homepageSections: z.array(z.enum(HOMEPAGE_SECTIONS)).min(1),
     sectionCopy: sectionCopySchema.optional(),
+    motion: motionSchema.prefault({}),
     forms: formsSchema,
     whatsapp: whatsappSchema.optional(),
     privacy: z.strictObject({

@@ -40,8 +40,13 @@ export function Card({
         padding === "sm" && "p-4 sm:p-5",
         padding === "md" && "p-5 sm:p-6",
         padding === "lg" && "p-6 sm:p-8",
+        // Only cards that actually navigate somewhere get hover and press
+        // feedback. An informational card that lifts under the cursor is
+        // promising something it cannot deliver.
         interactive &&
-          "transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-line-warm hover:shadow-lift",
+          "transition-[transform,box-shadow,border-color] duration-[var(--motion-normal)] " +
+            "ease-[var(--ease-emphasized)] hover:-translate-y-1 hover:border-line-warm " +
+            "hover:shadow-lift active:translate-y-0 active:scale-[0.995]",
         className,
       )}
     >

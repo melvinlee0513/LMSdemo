@@ -16,6 +16,9 @@ import { sectionCopy } from "@/lib/section-copy";
  *   featured-carousel  one large quote with manual controls
  *   grid               responsive card grid
  *   featured-and-grid  both — carousel first, then supporting cards
+ *
+ * The permission note is deliberately microcopy rather than the section's
+ * marketing sentence: it matters, but it is not what a parent came to read.
  */
 export function TestimonialsSection({
   centre,
@@ -44,8 +47,8 @@ export function TestimonialsSection({
     eyebrow: "In their words",
     heading: "What students and parents say",
     highlight: "students and parents",
-    description:
-      "Feedback from families who have studied with us. Every quote is published with permission.",
+    highlightAnimation: "drop",
+    description: "Real feedback from families who learn with us.",
   });
 
   const showCarousel = variant !== "grid";
@@ -57,13 +60,18 @@ export function TestimonialsSection({
         eyebrow={copy.eyebrow}
         heading={copy.heading}
         highlight={copy.highlight}
+        highlightAnimation={copy.highlightAnimation}
         description={copy.description}
         headingId="testimonials-heading"
       />
 
       <div className="mt-10 flex flex-col gap-6 sm:mt-12">
         {showCarousel ? (
-          <TestimonialCarousel testimonials={carouselItems} subjectNames={subjectNames} />
+          <TestimonialCarousel
+            testimonials={carouselItems}
+            subjectNames={subjectNames}
+            note="Testimonials shown with permission."
+          />
         ) : null}
 
         {showGrid ? (

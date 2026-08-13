@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TrialCtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { TimetableView } from "@/components/timetable/TimetableView";
+import { TimetableBoard } from "@/components/timetable/TimetableBoard";
 import { ButtonLink } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { buildMetadata, pageDescription } from "@/lib/seo";
@@ -37,13 +37,20 @@ export default function TimetablePage() {
   const centre = getCentre();
   if (!centre.featureFlags.timetable) notFound();
 
+  const branches = centre.locations.length;
+
   return (
     <>
       <PageHeader
         eyebrow="Weekly timetable"
-        title="Every session, week by week"
-        highlight="week by week"
-        description="Filter by form, subject and branch. On a phone, pick a day to see that day's classes as a list — no pinching at a seven-column grid."
+        title="Find a class that fits your week"
+        highlight="fits your week"
+        highlightAnimation="drop"
+        description={
+          branches > 1
+            ? "Filter by form, subject and branch to see exactly when each class runs. On a phone, pick a day and read it as a list."
+            : "Filter by form and subject to see exactly when each class runs. On a phone, pick a day and read it as a list."
+        }
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Timetable", path: "/timetable" },
@@ -57,12 +64,13 @@ export default function TimetablePage() {
         }
       />
 
-      <Section tone="surface">
-        <TimetableView
+      <Section tone="surface" containerSize="wide">
+        <TimetableBoard
           entries={timetableEntries(centre)}
           levels={levelOptions(centre)}
           subjects={subjectOptions(centre)}
           locations={locationOptions(centre)}
+          layout="responsive"
         />
       </Section>
 

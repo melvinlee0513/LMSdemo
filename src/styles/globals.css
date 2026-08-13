@@ -43,6 +43,60 @@
   --shadow-soft: 0 1px 2px rgb(32 38 50 / 0.04), 0 8px 24px -12px rgb(32 38 50 / 0.08);
   --shadow-lift: 0 2px 4px rgb(32 38 50 / 0.05), 0 18px 40px -20px rgb(32 38 50 / 0.16);
   --shadow-brand: 0 8px 20px -10px color-mix(in srgb, var(--brand-primary) 65%, transparent);
+
+  /* ------------------------------------------------------------------------
+     Motion tokens
+     ------------------------------------------------------------------------
+     One vocabulary for the whole site. Components reference these rather than
+     inventing their own durations, which is what keeps the interface feeling
+     like one product rather than a pile of separately tuned effects.
+
+     fast       feedback the finger/cursor should feel instantly
+     normal     state changes: filters, tabs, hover, day switches
+     reveal     content entering the viewport
+     dramatic   the few deliberate moments (headline typography)
+     ------------------------------------------------------------------------ */
+  --motion-fast: 160ms;
+  --motion-normal: 260ms;
+  --motion-reveal: 520ms;
+  --motion-dramatic: 640ms;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.33, 0, 0.15, 1);
+
+  /* Ambient motion amplitude — reduced on small screens further down. */
+  --float-y: 7px;
+  --float-x: 2px;
+
+  /* Animation-name switches. <CentreTheme /> sets these to `none` when a
+     centre turns the matching motion flag off, so a single configuration
+     value disables an effect everywhere without prop drilling. */
+  --anim-breathe: breathe;
+  --anim-dot: dot-pulse;
+  --anim-float: float-soft;
+  --anim-drop: drop-in;
+
+  /* Sticky geometry. The header is the only sticky chrome; the demo notice
+     above it scrolls away, so it is deliberately not counted here. */
+  --header-h: 4rem;
+  --stack-top: calc(var(--header-h) + 1.25rem);
+  --stack-step: 0.85rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 4.5rem;
+    --stack-top: calc(var(--header-h) + 2rem);
+    --stack-step: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --float-y: 3.5px;
+    --float-x: 0px;
+  }
 }
 
 @theme inline {
@@ -73,6 +127,9 @@
   --shadow-soft: var(--shadow-soft);
   --shadow-lift: var(--shadow-lift);
   --shadow-brand: var(--shadow-brand);
+
+  --ease-emphasized: var(--ease-emphasized);
+  --ease-soft: var(--ease-soft);
 }
 
 /* ==========================================================================
@@ -83,8 +140,7 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
-    /* Sticky header offset for in-page anchors */
-    scroll-padding-top: 5.5rem;
+    scroll-padding-top: calc(var(--header-h) + 1.5rem);
   }
 
   body {
@@ -99,7 +155,6 @@
     overflow-x: clip;
   }
 
-  /* Headings inherit the brand font and a tighter measure by default. */
   h1,
   h2,
   h3,
@@ -127,7 +182,6 @@
     font-style: normal;
   }
 
-  /* Native controls follow the brand */
   :root {
     accent-color: var(--brand-primary);
   }
@@ -154,7 +208,6 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  /* Keeps descenders from clipping in some browsers */
   padding-bottom: 0.05em;
 }
 
@@ -166,7 +219,6 @@
   );
 }
 
-/* Hides scrollbars on deliberately scrollable rails (day pills, filters). */
 @utility no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -176,29 +228,294 @@
 }
 
 /* ==========================================================================
-   Motion
-   --------------------------------------------------------------------------
-   Reveal animations are opt-in and driven by an IntersectionObserver in
-   <Reveal />. No animation library, and everything switches off for users who
-   ask for reduced motion.
+   Keyframes
+   ========================================================================== */
+
+/* Entrance — typography drops into its final baseline from above a clip box. */
+@keyframes drop-in {
+  from {
+    transform: translateY(-118%);
+    opacity: 0.001;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Entrance — generic section/card reveal. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Ambient — micro-pills drifting around the hero visual.
+   Amplitude comes from the responsive root variables; `--float-dir` flips
+   individual pills so neighbours never drift in lockstep. */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(
+      calc(var(--float-x) * var(--float-dir, 1)),
+      calc(var(--float-y) * -1 * var(--float-dir, 1)),
+      0
+    );
+  }
+}
+
+/* Ambient — eyebrow pills, almost subconscious. */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.022);
+    opacity: 0.95;
+  }
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    transform: scale(0.82);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* Entrance — odometer digit reel. */
+@keyframes reel {
+  from {
+    transform: translateY(var(--reel-from));
+  }
+  to {
+    transform: translateY(var(--reel-to));
+  }
+}
+
+/* Interaction — timetable day switch. */
+@keyframes settle-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Interaction — testimonial change. A few pixels, not a full-width slide. */
+@keyframes carousel-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--carousel-from, 14px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Motion components
    ========================================================================== */
 
 @layer components {
+  /* --- Drop-reveal typography -------------------------------------------
+     The text is ALWAYS present and visible in the document — this is real
+     markup a crawler and a screen reader read normally. The animation is
+     additive: `data-anim="run"` attaches a keyframe animation whose `from`
+     state is the hidden position, with `fill-mode: both` so the word waits
+     out its delay off-screen. Nothing is injected by JavaScript, so there is
+     no flash, no layout shift and no dependency on hydration.
+     --------------------------------------------------------------------- */
+  .drop-clip {
+    display: inline-block;
+    overflow: hidden;
+    /*
+      `overflow: hidden` makes an inline-block report its bottom *margin* edge
+      as its baseline instead of its text baseline, so baseline alignment is
+      not available here — an animated word would sit ~0.27em high.
+
+      Bottom alignment plus a constant nudge lands it exactly on the
+      surrounding baseline. The 0.05em was measured, and measured again across
+      font sizes from 41px to 52px and line-heights from 1.08 to 1.15: it is
+      constant in em, because it comes from the font's own descent metric
+      rather than from the line box.
+
+      The nudge uses `top`, not `transform`, so it cannot collide with the
+      drop animation running on the inner word.
+    */
+    vertical-align: bottom;
+    position: relative;
+    top: 0.05em;
+    /* Padding extends the clip window past ascenders and descenders; the equal
+       negative margin stops it affecting layout. */
+    padding: 0.14em 0.03em 0.2em;
+    margin: -0.14em -0.03em -0.2em;
+  }
+
+  .drop-word {
+    display: inline-block;
+    will-change: transform;
+  }
+
+  [data-anim="run"] .drop-word {
+    animation: var(--anim-drop, drop-in) var(--motion-dramatic)
+      var(--ease-emphasized) both;
+    animation-delay: calc(var(--drop-base, 0ms) + var(--i, 0) * 55ms);
+  }
+
+  /* --- Section reveal ---------------------------------------------------- */
   .reveal {
     opacity: 0;
     transform: translateY(14px);
     transition:
-      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+      opacity var(--motion-reveal) var(--ease-emphasized),
+      transform var(--motion-reveal) var(--ease-emphasized);
     transition-delay: var(--reveal-delay, 0ms);
-    will-change: opacity, transform;
   }
 
   .reveal[data-revealed="true"] {
     opacity: 1;
     transform: none;
   }
+
+  /* --- Ambient float ----------------------------------------------------- */
+  .float-soft {
+    animation: var(--anim-float, float-soft) var(--float-duration, 5.4s)
+      ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+    will-change: transform;
+  }
+
+  /* --- Breathing eyebrow ------------------------------------------------- */
+  .breathe {
+    animation: var(--anim-breathe, breathe) 3.6s ease-in-out infinite;
+    animation-delay: var(--breathe-delay, 0s);
+    transform-origin: left center;
+  }
+
+  .breathe-dot {
+    animation: var(--anim-dot, dot-pulse) 3.6s ease-in-out infinite;
+    animation-delay: var(--breathe-delay, 0s);
+  }
+
+  /* --- Odometer ---------------------------------------------------------- */
+  .reel-column {
+    display: inline-block;
+    overflow: hidden;
+    height: 1em;
+    line-height: 1;
+    vertical-align: baseline;
+    /*
+      No explicit width: each column sizes to the widest digit in its strip,
+      which is identical for every column. The final width is therefore
+      reserved from first paint without depending on the font shipping
+      tabular figures — Poppins does not have them, so `tabular-nums` alone
+      would be a no-op and a narrow "1" would rattle around inside a
+      "4"-sized box.
+
+      Centring the cells is what makes this read as an odometer rather than as
+      ragged text: every digit sits on the same fixed-width wheel.
+    */
+    text-align: center;
+  }
+
+  .reel-strip {
+    display: block;
+    /* Default (and no-JS) state is the final value. The animation only ever
+       plays *into* this position. */
+    transform: translateY(var(--reel-to));
+  }
+
+  [data-anim="run"] .reel-strip {
+    animation: reel var(--reel-duration, 900ms) var(--ease-emphasized) both;
+    animation-delay: var(--reel-delay, 0ms);
+  }
+
+  /* --- Timetable day switch ---------------------------------------------- */
+  .settle {
+    animation: settle-in var(--motion-normal) var(--ease-emphasized) both;
+  }
+
+  /* --- Testimonial change ------------------------------------------------- */
+  .carousel-item {
+    animation: carousel-in var(--motion-normal) var(--ease-emphasized) both;
+  }
+
+  /* --- Timetable class block ---------------------------------------------
+     Subject colour is a soft tint mixed into the centre's own surface and
+     border tokens, so secondary colour coding never competes with the brand
+     and always sits correctly on a re-themed site.
+     --------------------------------------------------------------------- */
+  .class-block {
+    --accent: var(--brand-primary);
+    background-color: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  }
+
+  .class-block-rule {
+    background-color: var(--accent);
+  }
+
+  .class-block-accent {
+    color: color-mix(in srgb, var(--accent) 88%, var(--text-primary));
+  }
+
+  /* --- Subject stacking --------------------------------------------------
+     Sticky layering, enabled only where there is genuinely room for it. On
+     short or narrow viewports the cards stay in normal document flow, which
+     is the behaviour that never traps a scroll.
+     --------------------------------------------------------------------- */
+  .stack-item {
+    position: relative;
+    z-index: var(--i, 0);
+  }
+
+  .stack-inner {
+    transition:
+      transform var(--motion-normal) var(--ease-standard),
+      opacity var(--motion-normal) var(--ease-standard);
+  }
+
+  @media (min-width: 768px) and (min-height: 680px) {
+    .stack-item {
+      position: sticky;
+      top: calc(var(--stack-top) + var(--i, 0) * var(--stack-step));
+    }
+
+    /* Set by <SubjectStack /> once the following card has taken the top slot. */
+    .stack-item[data-stacked="true"] .stack-inner {
+      transform: scale(0.985);
+      opacity: 0.93;
+    }
+  }
 }
+
+/* ==========================================================================
+   Reduced motion
+   --------------------------------------------------------------------------
+   Everything above is decoration over content that is already present. With
+   reduced motion requested: ambient motion stops, entrance animations resolve
+   instantly to their final state, statistics show their real value, and the
+   subject stack falls back to plain document flow.
+   ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -217,5 +534,33 @@
   .reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .drop-word,
+  [data-anim="run"] .drop-word {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .float-soft,
+  .breathe,
+  .breathe-dot {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  [data-anim="run"] .reel-strip {
+    animation: none !important;
+  }
+
+  .stack-item {
+    position: static !important;
+  }
+
+  .stack-item[data-stacked="true"] .stack-inner {
+    transform: none !important;
+    opacity: 1 !important;
   }
 }

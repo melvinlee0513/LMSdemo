@@ -28,6 +28,7 @@ folder, and a Vercel project.
 - [Demo mode vs production mode](#demo-mode-vs-production-mode)
 - [Creating a new centre](#creating-a-new-centre)
 - [Adding assets](#adding-assets)
+- [Motion](#motion)
 - [Component variants](#component-variants)
 - [Feature flags](#feature-flags)
 - [SEO](#seo)
@@ -252,6 +253,91 @@ A real centre supplies its own photography.
 
 ---
 
+## Motion
+
+Motion is a shared capability, not a per-page decoration. Three categories,
+kept deliberately separate:
+
+| Category | What it is | Where |
+| --- | --- | --- |
+| **Ambient** | Continuous, below conscious attention | Hero micro-pills drifting, eyebrow labels breathing |
+| **Entrance** | Plays once as content arrives | Drop-reveal headings, odometer statistics, section reveals |
+| **Interaction** | Responds to input | Button press, card hover, day switch, filter selection, carousel |
+
+The rule the codebase holds itself to: **at any scroll position there is at
+most one entrance animation running, plus ambient motion.** Nothing animates
+because it can.
+
+Durations and easings live in two places that agree with each other:
+`src/lib/motion.ts` (for delays computed in JavaScript) and the `--motion-*` /
+`--ease-*` custom properties in `globals.css` (for everything else).
+
+### How the entrance animations stay safe
+
+Every entrance effect is written as `[data-anim="run"] .thing { animation: … }`
+with the hidden state living in the **keyframes**, never in the base styles.
+That gives three properties for free:
+
+- **Nothing depends on JavaScript.** With JS disabled, or before hydration, the
+  content is simply in its finished state.
+- **No flash and no layout shift.** The element never has to be hidden first
+  and revealed later.
+- **Reduced motion is a one-line override.** `animation: none` leaves the
+  finished state exactly as it already was.
+
+`<InView />` is the single trigger: one observer per animated block,
+disconnected after it fires, no React state. The hero is the exception — it
+sets `data-anim="run"` on the server, so its headline animates from first
+paint with no client JavaScript at all.
+
+The odometer (`<RollingNumber />`) follows the same principle: each digit
+reel's *resting* transform is the final digit, and the animation only ever
+plays into it. The accessible value is a single visually-hidden string, so
+assistive technology never reads intermediate digits.
+
+### Configuration
+
+```ts
+motion: {
+  animatedHighlights: true,   // drop-reveal on selected headings
+  floatingHeroPills:  true,   // hero micro-pill drift
+  rollingStats:       true,   // odometer statistics
+  breathingEyebrows:  true,   // section-label pulse
+  subjectStacking:    true,   // sticky subject-card layering
+}
+```
+
+Switching one off is a configuration change, not a component change:
+`<CentreTheme />` sets the matching `--anim-*` animation-name variable to
+`none`, which disables that effect everywhere at once.
+
+Individual headings choose whether their highlighted fragment animates:
+
+```ts
+sectionCopy: {
+  testimonials: { highlightAnimation: "drop" },
+  classes:      { highlightAnimation: "none" },
+}
+```
+
+The engine enables it on a small number of deliberate moments — the hero, the
+testimonials heading, the branches heading and the closing CTA — because an
+effect used everywhere stops meaning anything.
+
+### Reduced motion
+
+With `prefers-reduced-motion: reduce`, ambient motion stops, entrance
+animations resolve instantly to their final state, statistics show their real
+value, and the subject stack falls back to normal document flow. All
+information remains available; only the movement goes.
+
+### Subject stacking
+
+Subject cards stick below the header and layer as you scroll. The stacking is
+pure CSS, gated to viewports with genuine room for it — from 768px wide **and**
+680px tall. Below that the cards stay in normal flow, because a full-height
+sticky card on a short phone is how you trap someone's scroll.
+
 ## Component variants
 
 A centre chooses its layout through `componentVariants` without any component
@@ -411,5 +497,7 @@ Next.js (App Router) · React · TypeScript (strict) · Tailwind CSS ·
 Lucide icons · Zod · `next/font` with locally hosted Poppins.
 
 No animation library, no UI kit, no state-management library, no analytics by
-default. Client JavaScript is limited to the parts that genuinely need it: the
-mobile drawer, filters, the carousel, the timetable controls and the forms.
+default. Every animation on the site is CSS keyframes or a CSS transition,
+triggered where necessary by a small IntersectionObserver. Client JavaScript is
+limited to the parts that genuinely need it: the mobile drawer, filters, the
+carousel, the timetable controls, the subject-stack depth cue and the forms.

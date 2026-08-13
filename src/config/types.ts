@@ -15,6 +15,7 @@ import type {
   identitySchema,
   locationSchema,
   methodsSchema,
+  motionSchema,
   navigationSchema,
   openingHoursSchema,
   seoSchema,
@@ -53,6 +54,8 @@ export type About = z.output<typeof aboutSchema>;
 export type CtaSection = z.output<typeof ctaSectionSchema>;
 export type FeatureFlags = z.output<typeof featureFlagsSchema>;
 export type ComponentVariants = z.output<typeof componentVariantsSchema>;
+export type MotionConfig = z.output<typeof motionSchema>;
+export type HighlightAnimation = "drop" | "none";
 export type Forms = z.output<typeof formsSchema>;
 export type WhatsappConfig = z.output<typeof whatsappSchema>;
 export type OpeningHours = z.output<typeof openingHoursSchema>;

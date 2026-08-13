@@ -7,7 +7,7 @@ import { FinalCtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
-import { subjectsForLocation } from "@/lib/content";
+import { classesForLocation, subjectsForLocation } from "@/lib/content";
 import { buildMetadata, pageDescription } from "@/lib/seo";
 import { getCentre } from "@/lib/site";
 import {
@@ -39,14 +39,20 @@ export default function LocationsPage() {
 
   const whatsapp = centre.featureFlags.whatsapp ? centre.whatsapp : undefined;
   const cities = [...new Set(centre.locations.map((location) => location.city))];
+  const multiple = centre.locations.length > 1;
 
   return (
     <>
       <PageHeader
-        eyebrow={centre.locations.length > 1 ? "Our branches" : "Find us"}
-        title={`Where to find us in ${listToSentence(cities)}`}
-        highlight={listToSentence(cities)}
-        description="Full address, opening hours and the subjects taught at each branch. Drop in during opening hours, or message us first and we will tell you which branch runs the class you need."
+        eyebrow={multiple ? "Our branches" : "Find us"}
+        title={multiple ? "Different locations. One teaching standard." : "Easy to find. Easy to get started."}
+        highlight={multiple ? "One teaching standard." : "Easy to get started."}
+        highlightAnimation="drop"
+        description={
+          multiple
+            ? `Choose the branch that works best for your family — ${listToSentence(cities)}.`
+            : `Our address, opening hours and the classes running in ${listToSentence(cities)}.`
+        }
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Locations", path: "/locations" },
@@ -63,6 +69,11 @@ export default function LocationsPage() {
                 subjectNames={subjectsForLocation(centre, location).map(
                   (subject) => subject.shortName ?? subject.name,
                 )}
+                classCount={
+                  centre.featureFlags.classes
+                    ? classesForLocation(centre, location.slug).length
+                    : undefined
+                }
                 href={
                   centre.featureFlags.locationDetailPages
                     ? `/locations/${location.slug}`

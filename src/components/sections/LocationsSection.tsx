@@ -3,31 +3,42 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import type { Centre } from "@/config/types";
-import { subjectsForLocation } from "@/lib/content";
+import { classesForLocation, subjectsForLocation } from "@/lib/content";
 import { sectionCopy } from "@/lib/section-copy";
 import { whatsappHref } from "@/lib/whatsapp";
 
 /**
- * Branch section. Also the site's canonical NAP block — name, address and
- * phone rendered identically here and on the locations pages, which is what
- * local search actually rewards.
+ * Branch section, and the site's canonical NAP block.
+ *
+ * The copy is chosen by how many locations the centre actually has — talking
+ * about "branches" and "different locations" when there is one address reads
+ * as a centre pretending to be bigger than it is.
  */
 export function LocationsSection({ centre }: { centre: Centre }) {
   if (!centre.featureFlags.locations || centre.locations.length === 0) return null;
 
   const whatsapp = centre.featureFlags.whatsapp ? centre.whatsapp : undefined;
-  const area = centre.identity.city ? ` in ${centre.identity.city}` : "";
+  const multiple = centre.locations.length > 1;
 
-  const copy = sectionCopy(centre, "locations", {
-    eyebrow: centre.locations.length > 1 ? "Our branches" : "Where to find us",
-    heading:
-      centre.locations.length > 1
-        ? `Two branches, one teaching standard`
-        : `Where to find us${area}`,
-    highlight: centre.locations.length > 1 ? "one teaching standard" : undefined,
-    description:
-      "Drop in during opening hours, or message us first and we will tell you which branch runs the class you need.",
-  });
+  const copy = sectionCopy(
+    centre,
+    "locations",
+    multiple
+      ? {
+          eyebrow: "Our branches",
+          heading: "Different locations. One teaching standard.",
+          highlight: "One teaching standard.",
+          highlightAnimation: "drop",
+          description: "Choose the branch that works best for your family.",
+        }
+      : {
+          eyebrow: "Find us",
+          heading: "Easy to find. Easy to get started.",
+          highlight: "Easy to get started.",
+          highlightAnimation: "drop",
+          description: "Our location, opening hours and the classes running here.",
+        },
+  );
 
   return (
     <Section tone="warm" ariaLabelledBy="locations-heading">
@@ -35,6 +46,7 @@ export function LocationsSection({ centre }: { centre: Centre }) {
         eyebrow={copy.eyebrow}
         heading={copy.heading}
         highlight={copy.highlight}
+        highlightAnimation={copy.highlightAnimation}
         description={copy.description}
         headingId="locations-heading"
       />
@@ -48,6 +60,11 @@ export function LocationsSection({ centre }: { centre: Centre }) {
               subjectNames={subjectsForLocation(centre, location).map(
                 (subject) => subject.shortName ?? subject.name,
               )}
+              classCount={
+                centre.featureFlags.classes
+                  ? classesForLocation(centre, location.slug).length
+                  : undefined
+              }
               href={
                 centre.featureFlags.locationDetailPages
                   ? `/locations/${location.slug}`

@@ -36,9 +36,10 @@ export default function RegisterPage() {
     <>
       <PageHeader
         eyebrow="Registration"
-        title="Register a student in four short steps"
-        highlight="four short steps"
-        description="Student details, subjects, your contact information, then a review before anything is sent. It takes about two minutes."
+        title="Let's get your child into the right class"
+        highlight="the right class"
+        highlightAnimation="drop"
+        description="Four short steps: student, classes, parent, review. It takes about two minutes, and nothing is sent until you have checked it."
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Register", path: "/register" },

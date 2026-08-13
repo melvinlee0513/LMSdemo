@@ -21,10 +21,10 @@ export function ClassesSection({ centre }: { centre: Centre }) {
 
   const copy = sectionCopy(centre, "classes", {
     eyebrow: "Weekly classes",
-    heading: "Classes your child can join this term",
-    highlight: "join this term",
+    heading: "Find the class that fits your child",
+    highlight: "fits your child",
     description:
-      "Every class has a named tutor, a fixed weekly slot and a capped group size. Book a trial to sit in on a real session first.",
+      "Every class has a named tutor, a fixed weekly slot and a capped group. Sit in on a real one before you decide.",
   });
 
   return (
@@ -33,6 +33,7 @@ export function ClassesSection({ centre }: { centre: Centre }) {
         eyebrow={copy.eyebrow}
         heading={copy.heading}
         highlight={copy.highlight}
+        highlightAnimation={copy.highlightAnimation}
         description={copy.description}
         headingId="classes-heading"
         align="left"

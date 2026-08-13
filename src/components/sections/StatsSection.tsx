@@ -1,22 +1,30 @@
 import { StatCard } from "@/components/cards/StatCard";
+import { InView } from "@/components/ui/InView";
 import { Section } from "@/components/ui/Section";
-import { Reveal } from "@/components/ui/Reveal";
 import type { Centre } from "@/config/types";
+import { MOTION } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
- * Trust statistics. Renders nothing at all when a centre has supplied no
- * figures — an empty stats strip is worse than no stats strip, and inventing
- * numbers on a centre's behalf is not an option.
+ * Trust statistics.
+ *
+ * Renders nothing at all when a centre has supplied no figures — an empty
+ * stats strip is worse than no stats strip, and inventing numbers on a
+ * centre's behalf is not an option.
+ *
+ * One <InView /> wraps the whole strip so a single observer starts every
+ * odometer, staggered left to right, exactly once per page load.
  */
 export function StatsSection({ centre }: { centre: Centre }) {
   if (centre.stats.length === 0) return null;
 
   const variant = centre.componentVariants.stats;
+  const rolling = centre.motion.rollingStats;
 
   return (
     <Section tone="surface" spacing="compact" ariaLabel="Centre at a glance">
-      <div
+      <InView
+        amount={0.35}
         className={cn(
           "grid gap-4",
           variant === "cards"
@@ -25,11 +33,16 @@ export function StatsSection({ centre }: { centre: Centre }) {
         )}
       >
         {centre.stats.map((stat, index) => (
-          <Reveal key={stat.label} delay={index * 60}>
-            <StatCard stat={stat} variant={variant} className="h-full" />
-          </Reveal>
+          <StatCard
+            key={stat.label}
+            stat={stat}
+            variant={variant}
+            className="h-full"
+            animate={rolling}
+            delay={index * MOTION.stagger.stats}
+          />
         ))}
-      </div>
+      </InView>
     </Section>
   );
 }

@@ -22,8 +22,8 @@ export function TutorsSection({ centre }: { centre: Centre }) {
 
   const copy = sectionCopy(centre, "tutors", {
     eyebrow: "Our tutors",
-    heading: "The people who will actually teach your child",
-    highlight: "actually teach",
+    heading: "Know exactly who's teaching your child",
+    highlight: "who's teaching your child",
     description:
       "No rotating pool of part-timers. Each subject has a named tutor who stays with the group for the year.",
   });
@@ -34,6 +34,7 @@ export function TutorsSection({ centre }: { centre: Centre }) {
         eyebrow={copy.eyebrow}
         heading={copy.heading}
         highlight={copy.highlight}
+        highlightAnimation={copy.highlightAnimation}
         description={copy.description}
         headingId="tutors-heading"
         align="left"

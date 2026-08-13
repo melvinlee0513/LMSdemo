@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { SubjectCard, type SubjectCardProps } from "@/components/cards/SubjectCard";
+import { SubjectStack } from "@/components/sections/SubjectStack";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FilterGroup, FilterPill } from "@/components/ui/FilterPill";
 import type { SubjectCategory } from "@/config/constants";
@@ -19,9 +20,11 @@ const ALL = "all";
 export function SubjectExplorer({
   cards,
   categories,
+  stacked = true,
 }: {
   cards: SubjectCardProps[];
   categories: { id: SubjectCategory; label: string }[];
+  stacked?: boolean;
 }) {
   const [category, setCategory] = useState<string>(ALL);
 
@@ -74,13 +77,16 @@ export function SubjectExplorer({
           description="Try another category, or message us — we may be able to arrange it."
         />
       ) : (
-        <ul className="grid gap-5">
-          {visible.map((card, index) => (
-            <li key={card.subject.slug}>
-              <SubjectCard {...card} index={index} />
-            </li>
+        <SubjectStack
+          // Remount the stack when the filter changes so sticky offsets and
+          // depth state are recalculated for the new list rather than carried
+          // over from the previous one.
+          key={category}
+          enabled={stacked}
+          items={visible.map((card, index) => (
+            <SubjectCard key={card.subject.slug} {...card} index={index} />
           ))}
-        </ul>
+        />
       )}
     </div>
   );

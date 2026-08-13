@@ -103,9 +103,10 @@ export default function ContactPage() {
     <>
       <PageHeader
         eyebrow="Contact"
-        title="Talk to us before you decide"
-        highlight="before you decide"
-        description="Tell us your child's form and subject and we will tell you honestly whether we have a class that fits — and what it would involve."
+        title="Not sure which class is the right fit?"
+        highlight="the right fit?"
+        highlightAnimation="drop"
+        description="Tell us your child's form and subject. We'll point you in the right direction — including when we're not the right centre for what you need."
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Contact", path: "/contact" },
@@ -154,9 +155,9 @@ export default function ContactPage() {
             <div className="flex flex-col gap-6">
               <SectionHeader
                 eyebrow="Enquiry form"
-                heading="Send us a message"
-                highlight="a message"
-                description="Prefer to type it out? Tell us what you need and we will reply on WhatsApp."
+                heading="Send an enquiry"
+                highlight="an enquiry"
+                description="Prefer to type it out? Tell us what you need and we'll reply on WhatsApp."
                 align="left"
                 headingId="enquiry-heading"
               />

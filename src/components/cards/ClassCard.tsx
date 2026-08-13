@@ -117,7 +117,14 @@ export function ClassCard({
 
       <div className="mt-auto flex flex-wrap items-center gap-2.5 pt-1">
         {href ? (
-          <Link href={href} className={buttonClasses({ variant: "primary", size: "sm" })}>
+          <Link
+            href={href}
+            className={cn(
+              buttonClasses({ variant: "primary", size: "sm" }),
+              // Lifts above the card-wide stretched link from the title.
+              "relative z-10",
+            )}
+          >
             View details
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>

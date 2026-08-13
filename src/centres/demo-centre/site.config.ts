@@ -126,11 +126,12 @@ export const siteConfig = {
     eyebrow: "Now enrolling for the new term",
     headline: [
       { text: "Understand it once.", break: true },
-      { text: "Remember it" },
+      { text: "Remember it", break: true },
       { text: "for the exam.", highlight: true },
     ],
     description:
       "Small-group tuition for Form 3–5 students in Kuching. Every class is capped, every tutor is named, and every week your child leaves with marked work and one clear thing to improve.",
+    highlightAnimation: "drop",
     primaryCta: { label: "Book a Free Trial Class", href: "/trial" },
     secondaryCta: { label: "See the Timetable", href: "/timetable" },
     trust: {
@@ -167,8 +168,8 @@ export const siteConfig = {
   // supplied and can stand behind.
   stats: [
     { icon: "graduationCap", value: "1,200+", label: "Students taught" },
-    { icon: "calendarDays", value: "9", label: "Years teaching in Kuching" },
-    { icon: "users", value: "12", label: "Students per class, maximum" },
+    { icon: "calendarDays", value: "9", label: "Years teaching" },
+    { icon: "users", value: "12", label: "Students per class, max" },
     { icon: "bookOpen", value: "5", label: "Subjects offered" },
   ],
 
@@ -177,7 +178,7 @@ export const siteConfig = {
     heading: "A method that survives contact with a real exam",
     highlight: "a real exam",
     description:
-      "Every subject at Gemilang runs on the same four-step cycle. It is unglamorous, it is repeated weekly, and it is the reason students stop relying on last-minute cramming.",
+      "Every subject runs on the same four-step cycle. Unglamorous, repeated weekly, and the reason students stop relying on last-minute cramming.",
     items: [
       {
         icon: "clipboardCheck",
@@ -274,11 +275,11 @@ export const siteConfig = {
   },
 
   trialCta: {
-    eyebrow: "Try before you commit",
-    heading: "Sit in on a real class before you enrol",
-    highlight: "a real class",
+    eyebrow: "Try a class",
+    heading: "See how the class feels before committing",
+    highlight: "before committing",
     description:
-      "Trial students join a normal session, do the same work and receive the same marked feedback. No sales pitch, no obligation to continue.",
+      "Trial students join a normal session, do the same work and get the same marked feedback. No sales pitch.",
     bullets: [
       "One free trial session per subject",
       "Join an existing class, not a demo lesson",
@@ -291,17 +292,12 @@ export const siteConfig = {
 
   finalCta: {
     eyebrow: "Ready when you are",
-    heading: "Let's find the right class for your child",
-    highlight: "the right class",
+    heading: "Start with one class. See how it feels.",
+    highlight: "See how it feels.",
     description:
-      "Tell us the subject and form, and we will suggest the class that fits — or tell you honestly if we are not the right centre for what you need.",
-    bullets: [
-      "Free trial class available",
-      "Named tutors for every subject",
-      "Two branches plus online classes",
-    ],
-    primaryCta: { label: "Register a Student", href: "/register" },
-    secondaryLabel: "Prefer to ask first?",
+      "Your child sits in on a real session — same work, same marked feedback, no obligation to continue.",
+    primaryCta: { label: "Book a Trial Class", href: "/trial" },
+    secondaryLabel: "Questions first?",
     whatsapp: true,
   },
 
@@ -333,17 +329,19 @@ export const siteConfig = {
     cta: "boxed",
   },
 
+  // Order is the page. The trial invitation sits directly after the classes
+  // it refers to; proof and location come after, then the closing CTA.
   homepageSections: [
     "hero",
     "stats",
     "subjects",
     "methods",
     "classes",
+    "trialCta",
     "tutors",
     "timetable",
     "testimonials",
     "locations",
-    "trialCta",
     "finalCta",
   ],
 

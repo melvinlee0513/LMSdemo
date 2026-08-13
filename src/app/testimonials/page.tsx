@@ -44,9 +44,10 @@ export default function TestimonialsPage() {
     <>
       <PageHeader
         eyebrow="In their words"
-        title="What students and parents tell us"
+        title="What students and parents say"
         highlight="students and parents"
-        description="Every quote below was given by a family who studied with us and is published with their permission. We do not write testimonials on anyone's behalf."
+        highlightAnimation="drop"
+        description="Real feedback from families who learn with us."
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Testimonials", path: "/testimonials" },

@@ -54,10 +54,14 @@ export default async function TrialPage({
   return (
     <>
       <PageHeader
-        eyebrow={cta?.eyebrow ?? "Trial class"}
-        title={cta?.heading ?? "Book a trial class"}
-        highlight={cta?.highlight}
-        description={cta?.description}
+        eyebrow={cta?.eyebrow ?? "Try a class"}
+        title={cta?.heading ?? "See how the class feels before committing"}
+        highlight={cta?.highlight ?? "before committing"}
+        highlightAnimation="drop"
+        description={
+          cta?.description ??
+          "Tell us what your child studies and which class works best. We'll take it from there."
+        }
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Book a trial", path: "/trial" },

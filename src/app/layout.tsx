@@ -71,7 +71,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang={centre.seo.language} className={font.className}>
       <body className="flex min-h-dvh flex-col bg-surface font-sans text-ink">
-        <CentreTheme branding={centre.branding} />
+        <CentreTheme branding={centre.branding} motion={centre.motion} />
 
         <a
           href="#main"

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
+import { AnimatedHeading } from "@/components/ui/DropRevealText";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import type { HighlightAnimation } from "@/config/types";
 import { cn } from "@/lib/utils";
 
 /**
@@ -12,12 +14,14 @@ import { cn } from "@/lib/utils";
  *   Supporting description explaining the section.
  *
  * `highlight` is matched inside `heading` so centres write one natural
- * sentence rather than three disconnected strings.
+ * sentence rather than three disconnected strings, and `highlightAnimation`
+ * decides whether that fragment drops in when the section is reached.
  */
 export function SectionHeader({
   eyebrow,
   heading,
   highlight,
+  highlightAnimation = "none",
   description,
   align = "center",
   headingId,
@@ -29,6 +33,7 @@ export function SectionHeader({
   eyebrow?: string;
   heading: string;
   highlight?: string;
+  highlightAnimation?: HighlightAnimation;
   description?: string;
   align?: "center" | "left";
   headingId?: string;
@@ -49,9 +54,8 @@ export function SectionHeader({
     >
       <div
         className={cn(
-          "flex flex-col gap-4",
+          "flex max-w-2xl flex-col gap-4",
           align === "center" ? "items-center" : "items-start",
-          align === "center" ? "max-w-2xl" : "max-w-2xl",
         )}
       >
         {eyebrow ? (
@@ -63,11 +67,16 @@ export function SectionHeader({
         <Heading
           id={headingId}
           className={cn(
-            "text-3xl leading-[1.15] font-bold sm:text-4xl lg:text-[2.75rem]",
+            "text-3xl leading-[1.15] font-bold sm:text-4xl lg:text-[2.6rem]",
             tone === "dark" ? "text-white" : "text-ink",
           )}
         >
-          <HighlightedHeading heading={heading} highlight={highlight} />
+          <HighlightedHeading
+            heading={heading}
+            highlight={highlight}
+            highlightAnimation={highlightAnimation}
+            tone={tone}
+          />
         </Heading>
 
         {description ? (
@@ -87,28 +96,23 @@ export function SectionHeader({
   );
 }
 
-/**
- * Splits a heading around its highlighted fragment. If the fragment is not
- * found the heading renders unchanged — a configuration typo degrades to
- * plain text rather than breaking the page.
- */
 export function HighlightedHeading({
   heading,
   highlight,
+  highlightAnimation = "none",
+  tone = "light",
 }: {
   heading: string;
   highlight?: string;
+  highlightAnimation?: HighlightAnimation;
+  tone?: "light" | "dark";
 }) {
-  if (!highlight) return <>{heading}</>;
-
-  const index = heading.indexOf(highlight);
-  if (index === -1) return <>{heading}</>;
-
   return (
-    <>
-      {heading.slice(0, index)}
-      <span className="text-gradient-brand">{highlight}</span>
-      {heading.slice(index + highlight.length)}
-    </>
+    <AnimatedHeading
+      heading={heading}
+      highlight={highlight}
+      animation={highlightAnimation}
+      highlightClassName={tone === "dark" ? "text-white" : "text-gradient-brand"}
+    />
   );
 }

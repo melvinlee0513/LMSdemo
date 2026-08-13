@@ -1,14 +1,16 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, type CSSProperties } from "react";
 
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { DropRevealText } from "@/components/ui/DropRevealText";
 import { Icon } from "@/components/ui/Icon";
 import { IconBox } from "@/components/ui/IconBox";
 import { Rating } from "@/components/ui/Rating";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import type { Hero as HeroConfig } from "@/config/types";
+import { floatStyle } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 export type HeroVariant =
@@ -30,6 +32,11 @@ export type HeroVariant =
  *   centered            centred text, media below
  *
  * Mobile always collapses to: text → CTAs → visual.
+ *
+ * Motion here is the site's one deliberate entrance moment: the highlighted
+ * fragment of the headline drops into place, then the micro-pills on the
+ * visual drift gently and continuously. Everything else in the hero is static
+ * — the LCP image in particular is untouched by animation.
  */
 export function Hero({
   hero,
@@ -64,15 +71,18 @@ export function Hero({
           >
             {hero.eyebrow ? <SectionLabel>{hero.eyebrow}</SectionLabel> : null}
 
+            {/* 38px on phones → 56px on large desktops, the readable end of the
+                reference range. Line length stays comfortable at every step. */}
             <h1
-              // 38px on phones → 56px on large desktops, the readable end of
-              // the reference range. Line length stays comfortable at every step.
               className={cn(
                 "text-[2.375rem] leading-[1.08] font-extrabold text-ink",
-                "sm:text-[2.75rem] lg:text-5xl xl:text-[3.5rem]",
+                "sm:text-[2.75rem] lg:text-5xl xl:text-[3.25rem]",
               )}
             >
-              <HeroHeadline fragments={hero.headline} />
+              <HeroHeadline
+                fragments={hero.headline}
+                animation={hero.highlightAnimation}
+              />
             </h1>
 
             <p
@@ -118,14 +128,29 @@ export function Hero({
   );
 }
 
-function HeroHeadline({ fragments }: { fragments: HeroConfig["headline"] }) {
+function HeroHeadline({
+  fragments,
+  animation,
+}: {
+  fragments: HeroConfig["headline"];
+  animation: HeroConfig["highlightAnimation"];
+}) {
   return (
     <>
       {fragments.map((fragment, index) => (
         <Fragment key={`${fragment.text}-${index}`}>
           {index > 0 ? " " : null}
           {fragment.highlight ? (
-            <span className="text-gradient-brand">{fragment.text}</span>
+            // `trigger="load"` because the hero is above the fold: the
+            // `data-anim` attribute is server-rendered, so the drop plays from
+            // first paint without waiting for hydration.
+            <DropRevealText
+              text={fragment.text}
+              animation={animation}
+              trigger="load"
+              baseDelay={140}
+              className="text-gradient-brand"
+            />
           ) : (
             fragment.text
           )}
@@ -201,7 +226,7 @@ function HeroMedia({ hero, variant }: { hero: HeroConfig; variant: HeroVariant }
           width={image.width}
           height={image.height}
           // The hero image is the LCP element on almost every visit — and the
-          // only image on the site marked priority.
+          // only image on the site marked priority. Never animated.
           priority
           fetchPriority="high"
           sizes="(max-width: 1024px) 100vw, 560px"
@@ -217,7 +242,7 @@ function HeroMedia({ hero, variant }: { hero: HeroConfig; variant: HeroVariant }
             <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-brand uppercase">
               <span
                 aria-hidden="true"
-                className="inline-block size-1.5 rounded-full bg-brand"
+                className="breathe-dot inline-block size-1.5 rounded-full bg-brand"
               />
               {preview.label}
             </p>
@@ -239,28 +264,45 @@ function HeroMedia({ hero, variant }: { hero: HeroConfig; variant: HeroVariant }
         ) : null}
       </div>
 
-      {/* Floating badge */}
+      {/*
+        Floating micro-pills.
+
+        They are positioned INSIDE the media wrapper and inset from its edges,
+        so their drift can never carry them over the headline or out of the
+        composition. Amplitude comes from responsive CSS variables and drops to
+        ~3px on phones; each pill gets its own tempo and direction so they
+        never move in lockstep.
+      */}
       {badge ? (
-        <div className="absolute -top-3 -left-3 hidden items-center gap-2.5 rounded-2xl border border-line bg-surface px-3.5 py-2.5 shadow-lift sm:flex lg:-left-6">
+        <div
+          style={floatStyle(0) as CSSProperties}
+          className="float-soft absolute top-2 left-2 flex items-center gap-2 rounded-2xl border border-line bg-surface px-2.5 py-2 shadow-lift sm:-top-3 sm:-left-3 sm:gap-2.5 sm:px-3.5 sm:py-2.5 lg:-left-6"
+        >
           <IconBox name={badge.icon} tone="primary" size="sm" />
           <div>
-            <p className="text-sm leading-tight font-bold text-ink">{badge.title}</p>
+            <p className="text-xs leading-tight font-bold text-ink sm:text-sm">
+              {badge.title}
+            </p>
             {badge.subtitle ? (
-              <p className="text-xs text-ink-muted">{badge.subtitle}</p>
+              <p className="text-[0.6875rem] text-ink-muted sm:text-xs">{badge.subtitle}</p>
             ) : null}
           </div>
         </div>
       ) : null}
 
-      {/* Floating stat chip */}
       {chip ? (
-        <div className="absolute -right-2 bottom-16 hidden items-center gap-2.5 rounded-2xl border border-line bg-surface px-3.5 py-2.5 shadow-lift lg:flex xl:-right-6">
-          <span className="inline-flex size-9 items-center justify-center rounded-xl bg-brand-soft text-brand">
-            <Icon name={chip.icon} className="size-4.5" />
+        <div
+          style={floatStyle(1) as CSSProperties}
+          className="float-soft absolute top-2 right-2 flex items-center gap-2 rounded-2xl border border-line bg-surface px-2.5 py-2 shadow-lift sm:-top-3 sm:-right-3 sm:gap-2.5 sm:px-3.5 sm:py-2.5 xl:-right-6"
+        >
+          <span className="inline-flex size-8 items-center justify-center rounded-xl bg-brand-soft text-brand sm:size-9">
+            <Icon name={chip.icon} className="size-4 sm:size-4.5" />
           </span>
           <div>
-            <p className="text-sm leading-tight font-bold text-ink">{chip.value}</p>
-            <p className="text-xs text-ink-muted">{chip.label}</p>
+            <p className="text-xs leading-tight font-bold text-ink sm:text-sm">
+              {chip.value}
+            </p>
+            <p className="text-[0.6875rem] text-ink-muted sm:text-xs">{chip.label}</p>
           </div>
         </div>
       ) : null}
